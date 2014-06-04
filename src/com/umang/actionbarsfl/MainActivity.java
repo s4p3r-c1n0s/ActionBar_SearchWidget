@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import android.support.v4.view.MenuItemCompat;
-import android.app.SearchManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
@@ -26,13 +25,6 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-      Intent intetn = getIntent();
-      if(Intent.ACTION_SEARCH.equals(intetn.getAction())) {
-
-         String  query = intetn.getStringExtra(SearchManager.QUERY);
-         Toast.makeText(MainActivity.this, query, Toast.LENGTH_LONG).show();
-
-      }
 		setContentView(R.layout.activity_main);
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayShowHomeEnabled(true);

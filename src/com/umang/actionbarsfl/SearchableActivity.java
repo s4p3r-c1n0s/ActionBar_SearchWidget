@@ -26,6 +26,13 @@ public class SearchableActivity extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.search_main);
+      Intent intetn = getIntent();
+      if(Intent.ACTION_SEARCH.equals(intetn.getAction())) {
+
+         String  query = intetn.getStringExtra(SearchManager.QUERY);
+         Toast.makeText(SearchableActivity.this, query, Toast.LENGTH_LONG).show();
+
+      }
 
 	}
 
