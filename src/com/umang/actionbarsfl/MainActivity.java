@@ -2,14 +2,20 @@ package com.umang.actionbarsfl;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.ComponentName;
 import android.app.Activity;
+import android.app.SearchableInfo;
+import android.app.SearchManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import  android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
+import android.support.v7.widget.SearchView;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
@@ -53,9 +59,19 @@ public class MainActivity extends ActionBarActivity {
       menuBar = menu;
 		
 	    MenuItem shareItem = menu.findItem(R.id.action_compose);
-	    mShareActionProvider = (ShareActionProvider)
-	            MenuItemCompat.getActionProvider(shareItem);
+	    mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
 	    mShareActionProvider.setShareIntent(getDefaultIntent());
+
+       SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+       Log.d("UmangX","manager : "+ (searchManager != null));
+       SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+       Log.d("UmangX","view : "+ (searchView != null));
+       ComponentName comp = new ComponentName("com.umang.actionbarsfl","com.umang.actionbarsfl.SearchableActivity");
+       Log.d("UmangX","comp : "+ comp);
+       SearchableInfo searchableInfo = searchManager.getSearchableInfo(comp);
+       Log.d("UmangX","info : "+ searchableInfo);
+       searchView.setSearchableInfo(searchableInfo);
+       searchView.setIconifiedByDefault(false);
 		return true;
 	}
 	
@@ -69,11 +85,11 @@ public class MainActivity extends ActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
-	        case R.id.action_search:
+	        case R.id.action_compose:
                menuBar.setGroupVisible(R.id.group1, true);
 	            Toast.makeText(MainActivity.this, "SEARCH", Toast.LENGTH_LONG).show();
 	            return true;
-	        case R.id.action_compose:
+	        case R.id.action_search:
                menuBar.setGroupVisible(R.id.group1, false);
                Toast.makeText(MainActivity.this, "COMPOSE", Toast.LENGTH_LONG).show();
 	            return true;
@@ -89,7 +105,7 @@ public class MainActivity extends ActionBarActivity {
    public void onGroupItemClick(MenuItem item){
       Toast.makeText(MainActivity.this, "ITEM", Toast.LENGTH_LONG).show();
       switch (item.getItemId()) {
-         case R.id.action_search : 
+         case R.id.action_compose : 
             Toast.makeText(MainActivity.this, "SEARCH", Toast.LENGTH_LONG).show();
             menuBar.setGroupVisible(item.getGroupId(), false);
             menuBar.setGroupVisible(R.id.group2, true);

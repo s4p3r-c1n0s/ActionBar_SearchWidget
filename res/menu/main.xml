@@ -4,12 +4,13 @@
    <group android:id="@+id/group1">
 
       <item android:id="@+id/action_compose"
+            myactionbar:actionProviderClass="android.support.v7.widget.ShareActionProvider"
             android:icon="@android:drawable/ic_menu_send"
             android:title="@android:string/ok"
-            myactionbar:showAsAction="always"
-            myactionbar:actionProviderClass="android.support.v7.widget.ShareActionProvider"/>
+            myactionbar:showAsAction="always"/>
 
       <item android:id="@+id/action_search"
+            myactionbar:actionViewClass="android.support.v7.widget.SearchView"
             android:icon="@android:drawable/ic_menu_search"
             android:onClick="onGroupItemClick"
             android:title="@android:string/search_go"
@@ -32,7 +33,6 @@
 
    </group>
 
-   <!--myactionbar:actionViewClass="android.support.v7.widget.SearchView"/>-->
 
 
 </menu>

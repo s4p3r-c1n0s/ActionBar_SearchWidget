@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -20,20 +21,24 @@ import android.support.v7.widget.ShareActionProvider;
 
 public class SearchableActivity extends ListActivity {
 	
+   public void onCreate(Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+              setContentView(R.layout.search_main);
+                  handleIntent(getIntent());
+   }
 
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.search_main);
-      Intent intetn = getIntent();
-      if(Intent.ACTION_SEARCH.equals(intetn.getAction())) {
-
-         String  query = intetn.getStringExtra(SearchManager.QUERY);
+   @Override
+   protected void onNewIntent(Intent intent) {
+       setIntent(intent);
+       handleIntent(intent);
+   }
+   
+   private void handleIntent(Intent intent) {
+      Log.d("UmangX","SPARTA");
+       if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+             String query = intent.getStringExtra(SearchManager.QUERY);
          Toast.makeText(SearchableActivity.this, query, Toast.LENGTH_LONG).show();
-
-      }
-
-	}
+           }
+   }
 
 }
