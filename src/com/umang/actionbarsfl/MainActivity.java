@@ -58,20 +58,21 @@ public class MainActivity extends ActionBarActivity {
 		getMenuInflater().inflate(R.menu.main, menu);
       menuBar = menu;
 		
-	    MenuItem shareItem = menu.findItem(R.id.action_compose);
+      MenuItem shareItem = menu.findItem(R.id.action_compose);
 	    mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
 	    mShareActionProvider.setShareIntent(getDefaultIntent());
 
        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
        Log.d("UmangX","manager : "+ (searchManager != null));
-       SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+       MenuItem searchItem = menu.findItem(R.id.action_search);
+       SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
        Log.d("UmangX","view : "+ (searchView != null));
        ComponentName comp = new ComponentName("com.umang.actionbarsfl","com.umang.actionbarsfl.SearchableActivity");
        Log.d("UmangX","comp : "+ comp);
        SearchableInfo searchableInfo = searchManager.getSearchableInfo(comp);
        Log.d("UmangX","info : "+ searchableInfo);
        searchView.setSearchableInfo(searchableInfo);
-       searchView.setIconifiedByDefault(false);
+       searchView.setIconifiedByDefault(true);
 		return true;
 	}
 	
