@@ -373,7 +373,9 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
             clear();
             if (data != null) {
                Log.d("UmangXAA","data not null, adding data");
-                addAll(data);
+               for(AppEntry ae : data){
+               add(ae);
+               }
             }
         }
 
@@ -455,13 +457,13 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
             // Place an action bar item for searching.
             MenuItem item = menu.add("Search");
             item.setIcon(android.R.drawable.ic_menu_search);
-            item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
+            MenuItemCompat.setShowAsAction(item, MenuItem.SHOW_AS_ACTION_IF_ROOM
                     | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
             mSearchView = new MySearchView(getActivity());
             mSearchView.setOnQueryTextListener(this);
             mSearchView.setOnCloseListener(this);
             mSearchView.setIconifiedByDefault(true);
-            item.setActionView(mSearchView);
+            MenuItemCompat.setActionView(item, mSearchView);
         }
 
         @Override public boolean onQueryTextChange(String newText) {
