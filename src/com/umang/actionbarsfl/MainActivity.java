@@ -403,13 +403,14 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     }
 
     public static class AppListFragment extends ListFragment
-            implements LoaderManager.LoaderCallbacks<List<AppEntry>> {
+            implements OnQueryTextListener, OnCloseListener,
+            LoaderManager.LoaderCallbacks<List<AppEntry>> {
 
         // This is the Adapter being used to display the list's data.
         AppListAdapter mAdapter;
 
         // The SearchView for doing filtering.
-        // SearchView mSearchView;
+        SearchView mSearchView;
 
         // If non-null, this is the current filter the user has provided.
         String mCurFilter;
@@ -434,6 +435,54 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
             // Prepare the loader.  Either re-connect with an existing one,
             // or start a new one.
             getLoaderManager().initLoader(0, null, this);
+        }
+
+        public static class MySearchView extends SearchView {
+            public MySearchView(Context context) {
+                super(context);
+            }
+
+            // The normal SearchView doesn't clear its search text when
+            // collapsed, so we will do this for it.
+            @Override
+            public void onActionViewCollapsed() {
+                setQuery("", false);
+                super.onActionViewCollapsed();
+            }
+        }
+
+        @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            // Place an action bar item for searching.
+            MenuItem item = menu.add("Search");
+            item.setIcon(android.R.drawable.ic_menu_search);
+            item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
+                    | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+            mSearchView = new MySearchView(getActivity());
+            mSearchView.setOnQueryTextListener(this);
+            mSearchView.setOnCloseListener(this);
+            mSearchView.setIconifiedByDefault(true);
+            item.setActionView(mSearchView);
+        }
+
+        @Override public boolean onQueryTextChange(String newText) {
+            // Called when the action bar search text has changed.  Since this
+            // is a simple array adapter, we can just have it do the filtering.
+            mCurFilter = !TextUtils.isEmpty(newText) ? newText : null;
+            mAdapter.getFilter().filter(mCurFilter);
+            return true;
+        }
+
+        @Override public boolean onQueryTextSubmit(String query) {
+            // Don't care about this.
+            return true;
+        }
+
+        @Override
+        public boolean onClose() {
+            if (!TextUtils.isEmpty(mSearchView.getQuery())) {
+                mSearchView.setQuery(null, true);
+            }
+            return true;
         }
 
         @Override public Loader<List<AppEntry>> onCreateLoader(int id, Bundle args) {
