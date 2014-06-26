@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+      xmlns:mycontextbar="http://schemas.android.com/apk/res-auto">
+
+   <item android:id="@+id/menu_search"
+         mycontextbar:actionViewClass="android.support.v7.widget.SearchView"
+         android:icon="@android:drawable/ic_menu_search"
+         android:onClick="onGroupItemClick"
+         android:title="@android:string/search_go"
+         mycontextbar:showAsAction="always"/>
+
+
+
+   <item android:id="@+id/menu_star"
+         android:title="@android:string/cancel"
+         android:onClick="onGroupItemClick"
+         android:icon="@android:drawable/btn_star_big_off"
+         mycontextbar:showAsAction="always"/>
+
+
+</menu>

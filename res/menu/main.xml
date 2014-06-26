@@ -26,11 +26,6 @@
             android:icon="@android:drawable/btn_star_big_off"
             myactionbar:showAsAction="always"/>
 
-      <item android:id="@+id/nested"
-            android:title="NEST"
-            myactionbar:showAsAction="always">
-      </item>
-
    </group>
 
 

@@ -24,6 +24,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.Loader;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.view.ActionMode.Callback;
+import android.support.v7.view.ActionMode;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar.Tab;
@@ -51,8 +53,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class MainActivity extends ActionBarActivity implements OnQueryTextListener {
-	
+public class MainActivity extends ActionBarActivity implements OnQueryTextListener, OnCloseListener {
+
+   private static SearchView searchView;
+   private static String mCurFilter;
+   private static AppListAdapter mAdapter;
 	private ShareActionProvider mShareActionProvider;
    private Menu menuBar;
 
@@ -409,13 +414,10 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
             LoaderManager.LoaderCallbacks<List<AppEntry>> {
 
         // This is the Adapter being used to display the list's data.
-        AppListAdapter mAdapter;
 
         // The SearchView for doing filtering.
-        SearchView mSearchView;
 
         // If non-null, this is the current filter the user has provided.
-        String mCurFilter;
 
         @Override public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
@@ -455,15 +457,13 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
         @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
             // Place an action bar item for searching.
-            MenuItem item = menu.add("Search");
-            item.setIcon(android.R.drawable.ic_menu_search);
-            MenuItemCompat.setShowAsAction(item, MenuItem.SHOW_AS_ACTION_IF_ROOM
-                    | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-            mSearchView = new MySearchView(getActivity());
-            mSearchView.setOnQueryTextListener(this);
-            mSearchView.setOnCloseListener(this);
-            mSearchView.setIconifiedByDefault(true);
-            MenuItemCompat.setActionView(item, mSearchView);
+            //MenuItem item = menu.add("Search");
+            //item.setIcon(android.R.drawable.ic_menu_search);
+            //MenuItemCompat.setShowAsAction(item, MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+            //searchView.setOnQueryTextListener(this);
+            //searchView.setOnCloseListener(this);
+            //searchView.setIconifiedByDefault(true);
+            //MenuItemCompat.setActionView(item, mSearchView);
         }
 
         @Override public boolean onQueryTextChange(String newText) {
@@ -481,8 +481,8 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
         @Override
         public boolean onClose() {
-            if (!TextUtils.isEmpty(mSearchView.getQuery())) {
-                mSearchView.setQuery(null, true);
+            if (!TextUtils.isEmpty(searchView.getQuery())) {
+                searchView.setQuery(null, true);
             }
             return true;
         }
@@ -512,6 +512,8 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     }
 
    @Override public boolean onQueryTextChange(String newText) {
+      mCurFilter = !TextUtils.isEmpty(newText) ? newText : null;
+      mAdapter.getFilter().filter(mCurFilter);
       // Called when the action bar search text has changed.  Since this
       // is a simple array adapter, we can just have it do the filtering.
       Toast.makeText(MainActivity.this, newText, Toast.LENGTH_SHORT).show();
@@ -528,6 +530,14 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
    public boolean onSearchRequested() {
       Toast.makeText(MainActivity.this, "REQUEST_SEARCH", Toast.LENGTH_SHORT).show();
       return super.onSearchRequested();
+   }
+
+   @Override
+   public boolean onClose() {
+      if (!TextUtils.isEmpty(searchView.getQuery())) {
+          searchView.setQuery(null, true);
+      }
+      return true;
    }
 
 
@@ -568,7 +578,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
        Log.d("UmangX","manager : "+ (searchManager != null));
        MenuItem searchItem = menu.findItem(R.id.action_search);
-       SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+       searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
       searchView.setOnQueryTextListener(this);
        Log.d("UmangX","view : "+ (searchView != null));
        ComponentName comp = new ComponentName("com.umang.actionbarsfl","com.umang.actionbarsfl.SearchableActivity");
@@ -618,6 +628,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
          case R.id.star :
             menuBar.setGroupVisible(item.getGroupId(), false);
             menuBar.setGroupVisible(R.id.group1, true);
+            startSupportActionMode(mActionModeCallback);
             Toast.makeText(MainActivity.this, "STAR", Toast.LENGTH_LONG).show();
             break;
          default : 
@@ -625,56 +636,41 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
             break;
       }
    }
-	
-	
-	public static class TabListener<T extends Fragment> implements ActionBar.TabListener {
-	    private Fragment mFragment;
-	    private final Activity mActivity;
-	    private final String mTag;
-	    private final Class<T> mClass;
 
-	    /** Constructor used each time a new tab is created.
-	      * @param activity  The host Activity, used to instantiate the fragment
-	      * @param tag  The identifier tag for the fragment
-	      * @param clz  The fragment's Class, used to instantiate the fragment
-	      */
-	    public TabListener(Activity activity, String tag, Class<T> clz) {
-	        mActivity = activity;
-	        mTag = tag;
-	        mClass = clz;
-	    }
+   private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+      @Override 
+      public boolean onCreateActionMode(ActionMode mode, Menu menu){
+         MenuInflater inflater = mode.getMenuInflater();
+         inflater.inflate(R.menu.context_menu,menu);
+         MenuItem searchItem = menu.findItem(R.id.menu_search);
+          searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+          searchView.setOnQueryTextListener(MainActivity.this);
+         searchView.setOnCloseListener(MainActivity.this);
+         return true;
+      }
 
-	    /* The following are each of the ActionBar.TabListener callbacks */
+      @Override
+      public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+         return false; // Return false if nothing is done
+      }
 
-		public void onTabSelected(Tab tab, FragmentTransaction ft) {
-	        // Check if the fragment is already initialized
-	        if (mFragment == null) {
-	            // If not, instantiate and add it to the activity
-	            mFragment = Fragment.instantiate(mActivity, mClass.getName());
-	            ft.add(android.R.id.content, mFragment, mTag);
-	        } else {
-	            // If it exists, simply attach it in order to show it
-	            ft.attach(mFragment);
-	        }
-	    }
+      @Override
+      public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+         switch (item.getItemId()) {
+            case R.id.menu_search:
+               mode.finish(); // Action picked, so close the CAB
+               return true;
+            default:
+               return false;
+         }
+      }
 
-		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-	        if (mFragment != null) {
-	            // Detach the fragment, because another one is being attached
-	            ft.detach(mFragment);
-	        }
-	    }
+      public void onDestroyActionMode(ActionMode mode) {
+         if (!TextUtils.isEmpty(searchView.getQuery())) {
+             searchView.setQuery(null, true);
+         }
+      }
 
-	    public void onTabReselected(Tab tab, FragmentTransaction ft) {
-	        // User selected the already selected tab. Usually do nothing.
-	    }
+   };
 
-	}
-	
-	public static class ArtistFragment extends Fragment {
-	}
-	
-	public static class AlbumFragment extends Fragment {
-		
-	}
 }
