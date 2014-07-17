@@ -65,7 +65,6 @@ import java.util.List;
         // The SearchView for doing filtering.
 
         // If non-null, this is the current filter the user has provided.
-
         @Override public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
@@ -78,6 +77,9 @@ import java.util.List;
 
             // Create an empty adapter we will use to display the loaded data.
             mAdapter = new AppListAdapter(getActivity());
+
+            if(mAdapter == null) Log.d("FUCK1","this is wrong, its null");
+            else Log.d("FUCK1","this is right, its not null");
             setListAdapter(mAdapter);
 
             // Start out with a progress indicator.

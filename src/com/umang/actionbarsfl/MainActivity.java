@@ -59,14 +59,16 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
    private static SearchView searchView;
    private static String mCurFilter;
+   private AppListFragment list;
    private static AppListAdapter mAdapter;
+   private static String mCuriFilter;
 	private ShareActionProvider mShareActionProvider;
    private Menu menuBar;
 
 
    @Override public boolean onQueryTextChange(String newText) {
       mCurFilter = !TextUtils.isEmpty(newText) ? newText : null;
-      mAdapter.getFilter().filter(mCurFilter);
+      ((AppListAdapter)list.getListAdapter()).getFilter().filter(mCurFilter);
       // Called when the action bar search text has changed.  Since this
       // is a simple array adapter, we can just have it do the filtering.
       Toast.makeText(MainActivity.this, newText, Toast.LENGTH_SHORT).show();
@@ -113,10 +115,18 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
       // Create the list fragment and add it as our sole content.
       if (fm.findFragmentById(android.R.id.content) == null) {
         Log.d("UmangX","frag manager's id.content is null, adding applistfragement");
-         AppListFragment list = new AppListFragment();
+         list = new AppListFragment();
          fm.beginTransaction().add(android.R.id.content, list).commit();
       }
 	}
+
+   @Override
+   protected void onResume(){
+      super.onResume();
+         mAdapter = (AppListAdapter)list.getListAdapter();
+         if(mAdapter == null) Log.d("FUCK","this is wrong, its null");
+         else Log.d("FUCK","this is right, its not null");
+   }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -169,6 +179,11 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 	    }
 	}
 
+   private void showXTextView(){
+   if(list.getListAdapter() == null) Log.d("BHENCHOD","CHUTIYA");
+      ((AppListAdapter)list.getListAdapter()).notifyDataSetChanged();
+   }
+
 
    public void onGroupItemClick(MenuItem item){
       Toast.makeText(MainActivity.this, "ITEM", Toast.LENGTH_LONG).show();
@@ -182,6 +197,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
             menuBar.setGroupVisible(item.getGroupId(), false);
             menuBar.setGroupVisible(R.id.group1, true);
             startSupportActionMode(mActionModeCallback);
+            showXTextView();
             Toast.makeText(MainActivity.this, "STAR", Toast.LENGTH_LONG).show();
             break;
          default : 

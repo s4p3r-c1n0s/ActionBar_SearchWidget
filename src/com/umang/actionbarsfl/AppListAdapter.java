@@ -88,6 +88,10 @@ import java.util.List;
                 view = convertView;
             }
 
+            TextView  useless = 
+               (TextView)view.findViewById(R.id.useless);
+            useless.setVisibility(View.VISIBLE);
+
             AppEntry item = getItem(position);
             Log.d("UmangXAA","getting AppEntry Icon");
             ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(item.getIcon());
